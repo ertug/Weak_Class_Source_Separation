@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-1470449-24"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-1470449-24');
+    </script>
+
+    <title>Audio Source Separation Using Variational Autoencoders and Weak Class Supervision</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            text-align: center;
+            vertical-align: top;
+            padding: 2px 6px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .authors {
+            text-align: center;
+        }
+
+        .example {
+            margin-bottom: 100px;
+        }
+
+        .box {
+            border: 1px solid black;
+        }
+
+        .bss-eval {
+            vertical-align: middle;
+        }
+
+        .bss-eval td {
+            text-align: right;
+        }
+
+        .box-title {
+            font-weight: bold;
+        }
+
+        .label {
+            vertical-align: middle;
+            font-size: 3em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">
+        <h1>Audio Source Separation Using Variational Autoencoders and Weak Class Supervision</h1>
+    </div>
+
+    <h2>Source Code</h2>
+    Source code is <a href="https://github.com/ertug/Weak_Class_Source_Separation">available at GitHub</a>.
+
+    <h2>Examples of the Separation Results</h2>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/000/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/000/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">3</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/000/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/000/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/000/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/000/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/000/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>10.00</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>12.97</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>13.25</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">9</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/000/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/000/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/000/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/000/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/000/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>9.37</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>11.24</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>14.26</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/001/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/001/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">4</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/001/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/001/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/001/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/001/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/001/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>10.54</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>14.83</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>12.70</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">9</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/001/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/001/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/001/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/001/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/001/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>9.14</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>11.08</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>13.90</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/002/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/002/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">2</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/002/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/002/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/002/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/002/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/002/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>13.65</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>15.80</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>17.84</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">6</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/002/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/002/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/002/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/002/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/002/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>14.94</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>18.17</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>17.82</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/003/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/003/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">1</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/003/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/003/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/003/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/003/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/003/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>14.98</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>20.44</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>16.47</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">5</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/003/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/003/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/003/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/003/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/003/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>13.51</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>16.13</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>17.05</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/004/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/004/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">3</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/004/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/004/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/004/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/004/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/004/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>18.08</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>20.66</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>21.59</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">5</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/004/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/004/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/004/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/004/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/004/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>19.45</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>23.44</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>21.68</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/005/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/005/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">0</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/005/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/005/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/005/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/005/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/005/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>4.97</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>5.87</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>13.22</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">5</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/005/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/005/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/005/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/005/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/005/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>7.46</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>12.84</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>9.17</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/006/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/006/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">8</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/006/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/006/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/006/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/006/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/006/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>8.87</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>9.98</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>15.74</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">9</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/006/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/006/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/006/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/006/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/006/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>12.68</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>17.09</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>14.72</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/007/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/007/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">1</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/007/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/007/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/007/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/007/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/007/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>13.69</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>36.13</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>13.71</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">6</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/007/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/007/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/007/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/007/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/007/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>4.60</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>4.75</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>20.55</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/008/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/008/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">0</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/008/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/008/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/008/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/008/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/008/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>12.49</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>14.14</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>17.68</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">1</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/008/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/008/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/008/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/008/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/008/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>15.49</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>20.63</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>17.11</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="examples/009/mixture.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/009/mixture.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td class="label">2</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 1</div>
+                <img src="examples/009/mask-0.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 1</div>
+                <img src="examples/009/source-true-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/009/source-true-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 1</div>
+                <img src="examples/009/source-pred-0.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/009/source-pred-0.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>2.63</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>3.10</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>14.25</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="label">8</td>
+            <td class="box">
+                <div class="box-title">Soft Mask 2</div>
+                <img src="examples/009/mask-1.jpg"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source 2</div>
+                <img src="examples/009/source-true-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/009/source-true-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source 2</div>
+                <img src="examples/009/source-pred-1.jpg"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="examples/009/source-pred-1.mp3"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>8.93</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>10.80</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>13.84</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        
+    </table>
+    
+
+    <!-- seed:128 -->
+</div>
+</body>
+</html>

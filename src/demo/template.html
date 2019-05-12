@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-1470449-24"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-1470449-24');
+    </script>
+
+    <title>Audio Source Separation Using Variational Autoencoders and Weak Class Supervision</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            text-align: center;
+            vertical-align: top;
+            padding: 2px 6px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .authors {
+            text-align: center;
+        }
+
+        .example {
+            margin-bottom: 100px;
+        }
+
+        .box {
+            border: 1px solid black;
+        }
+
+        .bss-eval {
+            vertical-align: middle;
+        }
+
+        .bss-eval td {
+            text-align: right;
+        }
+
+        .box-title {
+            font-weight: bold;
+        }
+
+        .label {
+            vertical-align: middle;
+            font-size: 3em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">
+        <h1>Audio Source Separation Using Variational Autoencoders and Weak Class Supervision</h1>
+    </div>
+
+    <h2>Source Code</h2>
+    Source code is <a href="https://github.com/ertug/Weak_Class_Source_Separation">available at GitHub</a>.
+
+    <h2>Examples of the Separation Results</h2>
+    {% for example in examples %}
+    <table class="example">
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="box">
+                <div class="box-title">Mixture</div>
+                <img src="{{example.mixture.image}}"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="{{example.mixture.audio}}"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% for i in range(example.labels|length) %}
+        <tr>
+            <td class="label">{{example.labels[i]}}</td>
+            <td class="box">
+                <div class="box-title">Soft Mask {{i+1}}</div>
+                <img src="{{example.masks[i]}}"/>
+            </td>
+            <td class="box">
+                <div class="box-title">Original Source {{i+1}}</div>
+                <img src="{{example.sources_true[i].image}}"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="{{example.sources_true[i].audio}}"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box">
+                <div class="box-title">Separated Source {{i+1}}</div>
+                <img src="{{example.sources_pred[i].image}}"/><br/>
+                <audio controls>
+                    <source type="audio/mpeg" src="{{example.sources_pred[i].audio}}"/>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
+            </td>
+            <td class="box bss-eval">
+                <table>
+                    <tr>
+                        <td>SDR</td><td>{{'%.2f' | format(example.bss_eval.sdr[i])}}</td>
+                    </tr>
+                    <tr>
+                        <td>SIR</td><td>{{'%.2f' | format(example.bss_eval.sir[i])}}</td>
+                    </tr>
+                    <tr>
+                        <td>SAR</td><td>{{'%.2f' | format(example.bss_eval.sar[i])}}</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+
+    <!-- seed:{{seed}} -->
+</div>
+</body>
+</html>
