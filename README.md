@@ -1,5 +1,5 @@
 # Audio Source Separation Using Variational Autoencoders and Weak Class Supervision
-This repo contains supplementary material for [the paper](https://arxiv.org/abs/1810.13104).
+This repository contains supplementary material for [the paper](https://arxiv.org/abs/1810.13104).
 
 ## Demo
 You can listen to some [**examples of our results**](https://ertug.github.io/Weak_Class_Source_Separation/).
@@ -26,6 +26,6 @@ If you find this repository useful, please cite our work:
   number={9},
   pages={1349--1353},
   year={2019},
-  publisher={IEEE}
+  doi={10.1109/LSP.2019.2929440}
 }
 ```
